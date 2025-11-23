@@ -1,0 +1,13 @@
+{
+  "name": "kacper-site",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "esbuild": "^0.19.0"
+  },
+  "scripts": {
+    "build:js": "esbuild src/main.js --bundle --minify --sourcemap=false --outfile=dist/main.js",
+    "build:css": "esbuild src/style.css --bundle --minify --sourcemap=false --outfile=dist/style.css",
+    "build": "npm run build:js && npm run build:css"
+  }
+}

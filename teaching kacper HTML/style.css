@@ -1,0 +1,211 @@
+/* ...existing code... */
+
+/* cosmic gradient + subtle starfield */
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  /* cosmic gradient (slight purple/pink highlights over black) */
+  background:
+    radial-gradient(1200px 600px at 10% 10%, rgba(150,40,180,0.12), transparent 8%),
+    radial-gradient(900px 500px at 90% 80%, rgba(255,40,120,0.06), transparent 8%),
+    linear-gradient(180deg, #0b0010 0%, #040004 55%, #000000 100%);
+  background-attachment: fixed;
+}
+
+/* faint starfield using a repeating-radial pattern */
+body::before{
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(rgba(255,255,255,0.9) 1px, transparent 1px);
+  background-size: 2.6px 2.6px;
+  opacity: 0.06;
+  transform: scale(1.2);
+  mix-blend-mode: screen;
+}
+
+/* code donut container (centered ring of characters) */
+.code-donut {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: min(72vmin, 720px);
+  height: min(72vmin, 720px);
+  transform: translate(-50%, -50%);
+  z-index: 0;          /* behind page content */
+  pointer-events: none;
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 20px 60px rgba(0,0,0,0.6));
+  animation: donutSpin 36s linear infinite;
+}
+
+/* rotate the whole donut slowly */
+@keyframes donutSpin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* each character in the donut */
+.code-donut .dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: center;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 700;
+  user-select: none;
+  color: rgba(140,255,200,0.96);
+  text-shadow:
+    0 6px 18px rgba(0,0,0,0.65),
+    0 0 6px rgba(140,255,200,0.06);
+  will-change: transform, opacity;
+  pointer-events: none;
+  white-space: pre;
+  font-size: clamp(8px, 0.8vmin, 16px);
+  transition: transform 220ms cubic-bezier(.2,.9,.2,1), opacity 220ms;
+}
+
+/* gentle per-dot float to give depth */
+@keyframes dotFloat {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* ensure hero content sits above the donut */
+.hero, .hero * { position: relative; z-index: 2; }
+
+/* smaller screens: reduce donut size & hide many dots via JS logic big brain from kacper*/
+@media (max-width: 640px) {
+  .code-donut { width: min(84vmin, 420px); height: min(84vmin, 420px); }
+}
+
+/* dark sticky nav with red hover glow */
+:root { --nav-height: 85px; }
+
+/* pin nav to the very top of the viewport and reserve space so content doesn't jump */
+.top-nav {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    height: var(--nav-height);
+    width: 100%;
+    z-index: 9999;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+
+/* account for device safe-area (notch) and nav height */
+body {
+  main { padding-top: var(--nav-height, 72px); }
+}
+
+/* ensure inner layout fills nav height and centers content */
+.top-nav .nav-inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem;
+}
+
+/* slightly smaller nav on small screens */
+@media (max-width: 680px) {
+    :root { --nav-height: 56px; }
+    .top-nav .nav-inner { padding: 0 .8rem; }
+}
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  width: 100%;
+  display: block;
+  backdrop-filter: blur(6px);
+  background: linear-gradient(180deg, rgba(10,8,8,0.75), rgba(6,4,4,0.55));
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  transition: box-shadow .28s ease, background-color .28s ease, transform .18s ease;
+}
+
+/* inner layout */
+.top-nav .nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* brand */
+.top-nav .brand {
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: .06em;
+  font-size: 1.05rem;
+  display: inline-block;
+  padding: .2rem .4rem;
+  transition: color .18s ease, text-shadow .18s ease;
+}
+
+/* links */
+.top-nav .nav-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: .6rem;
+  align-items: center;
+}
+.top-nav .nav-links a {
+  color: rgba(255,255,255,0.82);
+  text-decoration: none;
+  padding: .4rem .7rem;
+  border-radius: 8px;
+  transition: color .18s ease, box-shadow .18s ease, transform .18s ease;
+  font-weight: 600;
+  font-size: .95rem;
+}
+
+/* subtle hover for individual links */
+.top-nav .nav-links a:hover,
+.top-nav .nav-links a:focus {
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  outline: none;
+}
+
+/* glow effect when hovering the nav area */
+.top-nav:hover {
+  box-shadow: 0 10px 40px rgba(200,20,20,0.18), inset 0 -2px 40px rgba(180,10,10,0.06);
+  background: linear-gradient(180deg, rgba(20,2,2,0.86), rgba(8,2,2,0.6));
+}
+
+/* stronger red glow on links when hovering the nav */
+.top-nav:hover .nav-links a:hover,
+.top-nav:hover .nav-links a:focus,
+.top-nav:hover .brand:focus,
+.top-nav:hover .brand:hover {
+  color: #ffd6d6;
+  text-shadow: 0 0 18px rgba(255,50,50,0.22), 0 2px 8px rgba(0,0,0,0.6);
+  box-shadow: 0 6px 30px rgba(255,50,50,0.08);
+}
+
+/* small-screen layout */
+@media (max-width: 680px) {
+  .top-nav .nav-inner { padding: .5rem .8rem; }
+  .top-nav .nav-links { gap: .4rem; }
+  .top-nav .nav-links a { padding: .35rem .5rem; font-size: .9rem; }
+}
+
+/* ensure nav sits above shapes/donut/hero */
+.top-nav { z-index: 9999; }
+
+/* ...existing code... */

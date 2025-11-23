@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kacper — Visual Experiments</title>
+
+  <!-- Content Security Policy (adjust as you move inline scripts to external files) -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https:; script-src 'self' https: 'unsafe-inline'; style-src 'self' https: 'unsafe-inline'; object-src 'none'; base-uri 'self';">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* hero text styles kept inline for convenience */
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 72vh;
+      padding: 2rem;
+      text-align: center;
+    }
+    .kicker {
+      font-size: .9rem;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: .18em;
+      margin-bottom: .35rem;
+    }
+    .hero h1 {
+      margin: 0;
+      line-height: 1;
+      font-family: "Bebas Neue", system-ui, sans-serif;
+      font-size: clamp(3rem, 8vw, 7rem);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: transparent;
+      background: linear-gradient(90deg, #ff0000, #861431, #391d7a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .hero .name {
+      display: inline-block;
+      position: relative;
+      filter: drop-shadow(0 16px 30px rgba(198,27,146,0.2));
+      animation: float 4.5s ease-in-out infinite;
+    }
+    .tagline {
+      margin-top: .7rem;
+      color: rgba(255,255,255,0.92);
+      font-size: 1.05rem;
+      max-width: 60ch;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .badge {
+      display: inline-block;
+      margin-top: .6rem;
+      padding: .35rem .7rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.95);
+      font-weight: 600;
+      letter-spacing: .06em;
+      font-size: .9rem;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-8px) scale(1.02); }
+    }
+
+    @media (max-width:420px) {
+      .kicker { font-size: .8rem; }
+      .tagline { font-size: .95rem; }
+    }
+
+    /* minimal dot styles if not present in style.css (optional) */
+    .code-donut { position: fixed; inset: 0; pointer-events: none; overflow: hidden; transform: translate(-50%,-50%); left: 50%; top: 50%; }
+    .code-donut .dot { position: absolute; white-space: nowrap; color: rgba(255,255,255,0.9); font-family: monospace; font-size: 12px; user-select: none; pointer-events: none; }
+    @keyframes dotFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  </style>
+
+  <script>
+    // mark touch devices and remove no-js class early
+    (function(){
+      var doc = document.documentElement;
+      doc.classList.remove('no-js');
+      if (('ontouchstart' in window) || navigator.maxTouchPoints > 0) doc.classList.add('touch');
+    })();
+  </script>
+</head>
+<body>
+  <!-- responsive sticky nav -->
+  <nav class="top-nav" role="navigation" aria-label="Main">
+    <div class="nav-inner">
+      <a class="brand" href="#main-heading">Kacper</a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Open menu">☰</button>
+      <ul id="main-nav" class="nav-links" role="menubar">
+        <li role="none"><a role="menuitem" href="#about">About</a></li>
+        <li role="none"><a role="menuitem" href="#projects">Projects</a></li>
+        <li role="none"><a role="menuitem" href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="hero" role="main" aria-labelledby="main-heading">
+    <div>
+      <div class="kicker">Welcome to the Playground</div>
+
+      <h1 id="main-heading">
+        <span class="name">Kacper</span>
+        — Visual Experiments
+      </h1>
+
+      <p class="tagline">Hi, I'm Kacper — This is my experiment site to practice my coding.</p>
+
+      <div class="badge" aria-hidden="true">Creative & Curious</div>
+    </div>
+  </main>
+
+  <!-- spinning code donut background -->
+  <div id="code-donut" class="code-donut" aria-hidden="true"></div>
+
+  <!-- single consolidated script: right-click/devtools deterrent -->
+  <script>
+    // prevent right-click + common devtools shortcuts (advisory only)
+    (function(){
+      document.addEventListener('contextmenu', e => e.preventDefault(), {passive:false});
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) ||
+            (e.ctrlKey && e.key === 'U')) {
+          e.preventDefault();
+          return false;
+        }
+      }, {passive:false});
+    })();
+  </script>
+
+  <!-- code-donut script -->
+  <script>
+  (function () {
+    const container = document.getElementById('code-donut');
+    const CHARS = '01<>/\\|[]{}()*#@%&01';
+    const baseCount = Math.max(220, Math.round((innerWidth * innerHeight) / 1500));
+    let COUNT = Math.min(1200, baseCount);
+
+    function createDots() {
+      if (!container) return;
+      container.innerHTML = '';
+      const rect = container.getBoundingClientRect();
+      const w = rect.width || innerWidth;
+      const h = rect.height || innerHeight;
+      const cx = w / 2;
+      const cy = h / 2;
+      const baseRadius = Math.min(w, h) * 0.38;
+
+      for (let i = 0; i < COUNT; i++) {
+        const el = document.createElement('span');
+        el.className = 'dot';
+        const angle = Math.random() * Math.PI * 2;
+        const radialNoise = (Math.random() - 0.5) * (baseRadius * 0.18);
+        const rx = Math.cos(angle) * (baseRadius + radialNoise);
+        const ry = Math.sin(angle) * (baseRadius * 0.56 + radialNoise * 0.5);
+        const x = cx + rx;
+        const y = cy + ry;
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+
+        const depth = (ry / (baseRadius * 0.56));
+        const scale = 0.6 + Math.max(0, depth) * 1.4;
+        el.style.transform = `translate(-50%,-50%) scale(${scale}) rotate(${(Math.random()-0.5)*30}deg)`;
+        el.style.opacity = `${0.22 + 0.78 * (0.5 + depth * 0.5)}`;
+
+        el.textContent = CHARS[Math.floor(Math.random() * CHARS.length)];
+        el.style.animation = `dotFloat ${6 + Math.random()*8}s ease-in-out ${Math.random()*-8}s infinite`;
+
+        container.appendChild(el);
+      }
+    }
+
+    function onResize() {
+      if (innerWidth < 600) COUNT = Math.round(Math.max(120, COUNT * 0.45));
+      else if (innerWidth < 900) COUNT = Math.round(Math.max(220, COUNT * 0.7));
+      else COUNT = Math.max(220, Math.round((innerWidth * innerHeight) / 1500));
+      COUNT = Math.min(1200, COUNT);
+      createDots();
+    }
+
+    window.addEventListener('mousemove', (e) => {
+      const dx = (e.clientX - innerWidth/2) / innerWidth;
+      const dy = (e.clientY - innerHeight/2) / innerHeight;
+      if (container) container.style.transform = `translate(calc(-50% + ${dx*6}vw), calc(-50% + ${dy*3}vh)) rotate(${(dx*6)}deg)`;
+    }, {passive:true});
+
+    window.addEventListener('resize', onResize);
+    onResize();
+  })();
+  </script>
+
+  <!-- simple nav toggle for small screens -->
+  <script>
+    (function(){
+      const btn = document.querySelector('.nav-toggle');
+      const nav = document.getElementById('main-nav');
+      if (!btn || !nav) return;
+      btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        if (!expanded) nav.style.display = 'block'; else nav.style.display = '';
+      });
+      // ensure nav is visible on larger screens
+      function tidyNav(){
+        if (innerWidth > 900) nav.style.display = '';
+      }
+      window.addEventListener('resize', tidyNav);
+    })();
+  </script>
+</body>
+</html>
